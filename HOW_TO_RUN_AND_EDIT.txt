@@ -1,0 +1,45 @@
+L12_C1–L12_C8 CHEMISTRY PRACTICE SITE
+SOURCE CODE AND SETUP INSTRUCTIONS
+==================================
+
+FILES
+-----
+- index.html: main practice page with the original question bank.
+- index1.html: alternate page with seven corrected question entries.
+- README.md: short project description and GitHub Pages setup notes.
+
+Each HTML page contains its own complete question bank and site code. No
+external JavaScript packages, separate data files, or build tools are needed.
+
+RUN THE SITE
+------------
+Open index.html or index1.html in a current version of Chrome, Edge, or Firefox.
+Wait for the eight chapter cards to load, then choose a chapter. C1 through C8
+remain separate so you can study one chapter at a time.
+
+Before starting, choose 10, 20, 40, or all questions and choose when to check
+answers: after each question or after submitting the set. New questions and
+questions answered incorrectly are prioritized in later sets. The clock starts
+at 00:00 and counts upward with no time limit.
+
+The question bank is embedded in each HTML file. Do not separate it or delete
+the compressedChapterBank data block. Keep both script sections unless you
+understand their dependencies. The later chapter-specific script controls the
+L12_C1–L12_C8 practice flow.
+
+PUBLISH WITH GITHUB PAGES
+-------------------------
+Upload index.html, index1.html, README.md, and this guide to a GitHub repository.
+For a simple static site, use the repository's main branch and root folder as
+the GitHub Pages publishing source (Settings > Pages). The main page opens at
+the repository's Pages address; add /index1.html to open the corrected version.
+
+With GitHub Free, GitHub Pages requires a public repository. The HTML files,
+embedded question banks, and answer keys will therefore be publicly visible.
+
+QUESTION DATA AND PRIVACY
+-------------------------
+The question bank contains 1,082 questions across L12_C1 through L12_C8.
+Quiz results are calculated in the browser and are not sent to a server. The
+site uses browser storage, when available, to prioritize new and previously
+missed questions on later sets.
