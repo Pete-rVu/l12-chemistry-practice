@@ -486,7 +486,19 @@ renderTopics();
     if (topic === "L12_C5" && /cathode|catot/.test(lowerStem) && /khử|reduction/.test(lowerCorrect)) return "Ở cathode (catot) xảy ra khử: tiểu phân tại điện cực nhận electron. Quy tắc này đúng cho cả pin điện hóa lẫn bình điện phân.";
     if (topic === "L12_C8" && /số phối trí|coordination number/.test(lowerStem)) return "Số phối trí là số nguyên tử cho liên kết trực tiếp với ion trung tâm. Với phối tử càng cua, cần đếm từng nguyên tử cho liên kết chứ không chỉ đếm số phân tử phối tử.";
     if (topic === "L12_C8" && /số oxi hóa|oxidation state/.test(lowerStem) && /phức|complex/.test(lowerStem)) return "Tính điện tích của toàn phức bằng cách cộng số oxi hóa của ion trung tâm với điện tích của từng phối tử; kết quả phải bằng điện tích ghi trên phức.";
-    return "";
+    const principleByChapter = {
+      L12_C1: "Ester được nhận biết qua nhóm –COO– nối hai gốc; thủy phân ester cắt liên kết này, còn xà phòng hóa chất béo bằng kiềm tạo glycerol và muối của acid béo.",
+      L12_C2: "Monosaccharide không thủy phân thành carbohydrate nhỏ hơn; disaccharide thủy phân thành hai monosaccharide; polysaccharide gồm nhiều mắt xích. Công thức Cₙ(H₂O)ₙ chỉ phù hợp với một số carbohydrate.",
+      L12_C3: "Amine có nitrogen gắn với gốc carbon; amide có liên kết C(=O)–N nên không được xếp là amine. Amino acid đồng thời có nhóm –NH₂ và –COOH.",
+      L12_C4: "Trùng hợp cộng thường mở liên kết đôi C=C của monomer mà không tách phân tử nhỏ; trùng ngưng tạo polymer kèm phân tử nhỏ như H₂O hoặc HCl.",
+      L12_C5: "Oxi hóa là nhường electron và số oxi hóa tăng; khử là nhận electron và số oxi hóa giảm. Ở anode xảy ra oxi hóa, còn ở cathode xảy ra khử.",
+      L12_C6: "Kim loại dễ nhường electron để tạo cation; mức độ phản ứng và khả năng đẩy kim loại khác có thể so sánh bằng dãy hoạt động hóa học. Ion kim loại nhận electron để tạo kim loại.",
+      L12_C7: "Kim loại nhóm IA thường tạo ion +1, nhóm IIA thường tạo ion +2. Khi đi xuống mỗi nhóm, bán kính tăng và electron hóa trị bị giữ yếu hơn nên tính kim loại tăng.",
+      L12_C8: "Trong phức chất, phối tử cho cặp electron tạo liên kết với ion trung tâm. Số phối trí đếm số nguyên tử cho liên kết trực tiếp; tổng điện tích các phần phải bằng điện tích của phức.",
+    };
+    const principle = principleByChapter[topic];
+    if (principle) return "Mấu chốt để kiểm tra đáp án " + q.answer + " (“" + correct + "”): " + principle;
+    return "Đáp án " + q.answer + " (“" + correct + "”) được xác nhận trong khóa đáp án. Hãy đối chiếu mệnh đề này với yêu cầu của câu hỏi: “" + stem + "”.";
   }
   function renderCorrectChoiceExplanation(q, includeAnswer = true) {
     const reason = explainCorrectChoice(q);
@@ -602,7 +614,7 @@ renderTopics();
   }
   const imageStyle = document.createElement('style');
   imageStyle.textContent = '.question-title img, .option-label img, .review-item img { max-width:100%; height:auto; vertical-align:middle; } .option-label { overflow-wrap:anywhere; } .setting-control { display:flex; align-items:center; gap:9px; } .setting-control select { padding:8px 10px; border-radius:8px; } .answer-feedback { margin:12px 0 0; font-size:14px; line-height:1.55; } .answer-feedback.correct, .answer-feedback.incorrect { padding:12px 14px; border-radius:10px; } .answer-feedback.correct { color:light-dark(#176b3b,#a9e3bc); background:light-dark(#edf8f0,#203f30); border:1px solid light-dark(#b7dec3,#386b4a); } .answer-feedback.incorrect { color:light-dark(#9c342b,#ffc1b7); background:light-dark(#fff0ed,#482b2a); border:1px solid light-dark(#e7b2ab,#85504a); } .option.correct { border-color:#399b61; background:light-dark(#edf8f0,#203f30); } .option.incorrect { border-color:#c66b59; background:light-dark(#fff0ed,#482b2a); } .option:disabled { cursor:default; opacity:1; }';
-  imageStyle.textContent += ' .feedback-explanation { margin-top:10px; padding:12px; border-radius:10px; text-align:left; font-weight:400; color:light-dark(#51221d,#ffe0db); background:light-dark(#fff7f5,#342321); border:1px solid light-dark(#e3aaa1,#79504a); } .feedback-explanation strong { font-weight:700; } .feedback-explanation p { margin:7px 0 0; } .review-explanation { margin-top:10px; } .answer-feedback.incorrect .feedback-explanation { color:light-dark(#51221d,#ffe0db); }';
+  imageStyle.textContent += ' .feedback-explanation { margin-top:10px; padding:12px; border-radius:10px; text-align:left; font-weight:400; color:light-dark(#51221d,#ffe0db); background:light-dark(#fff7f5,#342321); border:1px solid light-dark(#e3aaa1,#79504a); } .feedback-explanation strong { font-weight:700; } .feedback-explanation p { margin:7px 0 0; } .review-explanation { margin-top:10px; } .answer-feedback.incorrect .feedback-explanation { color:light-dark(#51221d,#ffe0db); } .answer-feedback.correct .feedback-explanation { color:light-dark(#174728,#d9f8e3); background:light-dark(#f0fbf3,#203b2b); border-color:light-dark(#b7dec3,#386b4a); }';
   document.head.appendChild(imageStyle);
   initializeChapterBank().catch(error => {
     console.error('Không tải được bộ câu hỏi L12_C1–L12_C8', error);
