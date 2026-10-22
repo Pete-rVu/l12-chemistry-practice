@@ -383,7 +383,15 @@ renderTopics();
         D: "D đúng: thủy phân một phân tử disaccharide tạo ra hai phân tử monosaccharide. Ví dụ, saccharose + nước tạo glucose và fructose. Vì đề hỏi phát biểu sai nên D không phải đáp án.",
       },
       correct: "A sai khi nêu Cₙ(H₂O)ₙ như công thức chung. Công thức này phù hợp với một số carbohydrate như glucose, nhưng saccharose là C₁₂H₂₂O₁₁ và mắt xích tinh bột là C₆H₁₀O₅; không phải carbohydrate nào cũng có tỉ lệ C:H:O là 1:2:1. Dạng Cₙ(H₂O)ₘ chỉ là cách biểu diễn gần đúng, không phải quy tắc đúng cho mọi carbohydrate."
-    }
+    },
+    L12_C2_0071: {
+      wrong: {
+        A: "A chưa đúng: fructose không phải mắt xích tạo nên tinh bột và cellulose. Cả hai đều là polysaccharide gồm các gốc glucose; chúng khác nhau ở kiểu liên kết glycosidic và cấu hình α/β.",
+        C: "C nói đến các phân tử glucose ban đầu, nên đây là cách nói gần đúng về monomer. Trong mạch polysaccharide, các glucose đã nối với nhau bằng liên kết glycosidic và mất H₂O khi ngưng tụ; đơn vị nằm trong mạch là gốc glucose. Vì đề hỏi cấu tạo của polymer, B diễn đạt chính xác hơn. Một số tài liệu vẫn gọi đó là các đơn vị glucose, nên điểm phân biệt ở đây là cách gọi “phân tử” hay “gốc” trong mạch đã liên kết.",
+        D: "D chưa đúng: saccharose là đường đôi gồm glucose và fructose, không phải đơn vị lặp tạo nên tinh bột hay cellulose. Thủy phân hoàn toàn tinh bột hoặc cellulose cho glucose; vì vậy điểm chung cấu tạo là các gốc glucose.",
+      },
+      correct: "B đúng: tinh bột và cellulose đều là polysaccharide có mạch tạo từ các gốc glucose nối bằng liên kết glycosidic. Phần khác nhau là tinh bột có liên kết α (chủ yếu α-1,4 và nhánh α-1,6), còn cellulose có liên kết β-1,4; câu hỏi hỏi điểm giống nhau nên chọn gốc glucose.",
+    },
   };
   function explainWrongChoice(q, picked) {
     const authored = authoredRationales[q.id] && authoredRationales[q.id].wrong && authoredRationales[q.id].wrong[picked];
