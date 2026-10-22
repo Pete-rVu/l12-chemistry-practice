@@ -2,44 +2,41 @@ L12_C1–L12_C8 CHEMISTRY PRACTICE SITE
 SOURCE CODE AND SETUP INSTRUCTIONS
 ==================================
 
-FILES
------
-- index.html: main practice page with the original question bank.
-- index1.html: alternate page with seven corrected question entries.
-- README.md: short project description and GitHub Pages setup notes.
-
-Each HTML page contains its own complete question bank and site code. No
-external JavaScript packages, separate data files, or build tools are needed.
+RECOMMENDED PAGE
+----------------
+- index1.html: the corrected practice page with seven corrected question entries.
+- index.html: redirects visitors to index1.html on the published website.
+- README.md: project overview and live links.
 
 RUN THE SITE
 ------------
-Open index.html or index1.html in a current version of Chrome, Edge, or Firefox.
-Wait for the eight chapter cards to load, then choose a chapter. C1 through C8
-remain separate so you can study one chapter at a time.
+Open the live site at:
+https://pete-rvu.github.io/l12-chemistry-practice/
+
+To open the corrected page directly, use:
+https://pete-rvu.github.io/l12-chemistry-practice/index1.html
+
+For local use, open index1.html in a current version of Chrome, Edge, or Firefox.
+Choose a chapter card to study one chapter at a time; L12_C1 through L12_C8
+remain separate.
 
 Before starting, choose 10, 20, 40, or all questions and choose when to check
 answers: after each question or after submitting the set. New questions and
 questions answered incorrectly are prioritized in later sets. The clock starts
 at 00:00 and counts upward with no time limit.
 
-The question bank is embedded in each HTML file. Do not separate it or delete
-the compressedChapterBank data block. Keep both script sections unless you
-understand their dependencies. The later chapter-specific script controls the
-L12_C1–L12_C8 practice flow.
+The question bank is embedded in each HTML file. No separate data files,
+external JavaScript packages, or build tools are needed.
 
-PUBLISH WITH GITHUB PAGES
--------------------------
-Upload index.html, index1.html, README.md, and this guide to a GitHub repository.
-For a simple static site, use the repository's main branch and root folder as
-the GitHub Pages publishing source (Settings > Pages). The main page opens at
-the repository's Pages address; add /index1.html to open the corrected version.
+GITHUB PAGES AND PUBLIC ACCESS
+------------------------------
+The public repository is:
+https://github.com/Pete-rVu/l12-chemistry-practice
 
-With GitHub Free, GitHub Pages requires a public repository. The HTML files,
-embedded question banks, and answer keys will therefore be publicly visible.
+GitHub Pages serves the public website from the main branch and root folder.
+The root index.html redirects to the recommended index1.html page.
 
-QUESTION DATA AND PRIVACY
--------------------------
-The question bank contains 1,082 questions across L12_C1 through L12_C8.
-Quiz results are calculated in the browser and are not sent to a server. The
-site uses browser storage, when available, to prioritize new and previously
-missed questions on later sets.
+The repository and site are public. The HTML files contain the questions and
+answer keys, which anyone can view or download. Quiz results are calculated in
+the browser and are not sent to a server. Browser storage is used, when
+available, to prioritize new and previously missed questions.
