@@ -390,6 +390,31 @@ renderTopics();
       if (/xà phòng hóa|xà phòng hoá/.test(lowerSelected)) return 'Xà phòng hóa là phản ứng chất béo với kiềm tạo glycerol và muối của acid béo. Câu hỏi hỏi nguyên nhân gây mùi ôi khi chiên rán nhiều lần; đó chủ yếu là sự oxi hóa dầu mỡ bởi oxygen.';
       if (/hydrogen hóa|hydrogen hoá|hiđro hóa|hiđro hoá/.test(lowerSelected)) return 'Hydrogen hóa cộng H₂ vào liên kết đôi C=C, làm giảm độ không no của dầu. Nó không giải thích mùi ôi do dầu mỡ bị oxi hóa khi chiên rán nhiều lần.';
     }
+    if (currentTopic === 'L12_C1' && /chất giặt rửa/.test(`${lowerStem} ${lowerSelected}`)) {
+      if (/tổng hợp từ dầu mỏ/.test(lowerSelected)) return 'Phương án này chỉ mô tả chất giặt rửa tổng hợp (thường sản xuất từ nguyên liệu dầu mỏ), không phải định nghĩa chung của chất giặt rửa. Định nghĩa cần nêu tác dụng làm sạch khi dùng với nước và không phản ứng hóa học với bề mặt được làm sạch.';
+      if (/làm sạch/.test(lowerSelected) && /vật rắn/.test(lowerSelected) && !/không gây ra phản ứng|không phản ứng/.test(lowerSelected)) return 'Phương án này nêu tác dụng làm sạch nhưng thiếu điều kiện phân biệt trong định nghĩa: chất giặt rửa làm sạch bề mặt mà không phản ứng hóa học với chất làm nên bề mặt đó.';
+    }
+    if (currentTopic === 'L12_C1' && /chất giặt rửa/i.test(`${lowerStem} ${lowerSelected}`) && /không tan trong nước/.test(lowerSelected)) {
+      return 'Xà phòng và chất giặt rửa có phần ưa nước và phần kị nước, nhờ đó chúng phân tán trong nước và gom chất bẩn. Vì vậy mô tả chúng là “không tan trong nước” không đúng.';
+    }
+    if (currentTopic === 'L12_C1' && /saccharose|sucrose/.test(lowerSelected) && /xà phòng|saponification/.test(lowerStem)) {
+      return 'Saccharose là carbohydrate, không phải chất béo. Xà phòng được tạo khi triglyceride trong dầu mỡ bị thủy phân trong môi trường kiềm, tạo glycerol và muối của acid béo.';
+    }
+    if (currentTopic === 'L12_C1' && /thủy phân chất béo|thuỷ phân chất béo/.test(lowerStem) && /xà phòng hóa|xà phòng hoá/.test(lowerSelected)) {
+      return 'Xà phòng hóa là thủy phân chất béo trong môi trường kiềm và tạo muối acid béo. Đề hỏi thủy phân trong môi trường acid, phản ứng này thuận nghịch.';
+    }
+    if (currentTopic === 'L12_C1' && /thu được glycerol/.test(lowerStem) && /benzyl acetate/.test(lowerSelected)) {
+      return 'Benzyl acetate là ester đơn chức, không có khung glycerol để giải phóng khi xà phòng hóa. Chất béo như tristearin là triester của glycerol nên tạo glycerol.';
+    }
+    if (currentTopic === 'L12_C1' && /methyl acrylate/.test(lowerStem) && /ch3cooch3/.test(normalized)) {
+      return 'CH₃COOCH₃ là methyl acetate, tạo từ acetic acid. Methyl acrylate phải giữ nối đôi C=C của gốc acrylate: CH₂=CHCOOCH₃.';
+    }
+    if (currentTopic === 'L12_C1' && /không thuộc loại acid béo|không phải.*acid béo/.test(lowerStem) && /oleic acid/.test(lowerSelected)) {
+      return 'Oleic acid là acid béo không no mạch dài (C₁₇H₃₃COOH). Câu hỏi yêu cầu acid không thuộc loại acid béo; hãy chọn acid mạch ngắn như acetic acid.';
+    }
+    if (currentTopic === 'L12_C1' && /sản xuất xà phòng|điều chế.*xà phòng/.test(lowerStem) && /k2so4/.test(normalized)) {
+      return 'K₂SO₄ là muối sulfate, không phải kiềm dùng để xà phòng hóa chất béo. NaOH (hoặc KOH) cung cấp OH⁻ để thủy phân triglyceride và tạo xà phòng.';
+    }
     if (currentTopic === 'L12_C1' && asksForEster && asksNot && /COO/.test(normalized) && !/COOH/.test(normalized)) {
       return `Phương án ${picked} có liên kết –COO– của ester, trong khi câu hỏi yêu cầu chất không phải ester. Vì vậy lựa chọn này không thỏa từ khóa “không phải”.`;
     }
@@ -403,9 +428,16 @@ renderTopics();
       return `Phương án ${picked} có nhóm –COOH của carboxylic acid (hoặc amino acid), nên không phải amine đơn chức như yêu cầu. Hãy phân biệt amine với amino acid và amide.`;
     }
     const topic = currentTopic || String(q.id || '').match(/^L12_C[1-8]/)?.[0] || '';
-    const hint = topic === 'L12_C1' && /dầu mỡ|dầu ăn|lipid|chất béo/i.test(stem)
-      ? 'Với chất béo, phân biệt oxi hóa trong không khí với thủy phân, xà phòng hóa và hydrogen hóa: mỗi quá trình có điều kiện và sản phẩm khác nhau.'
-      : explanationHints[topic] || 'Đối chiếu từng lựa chọn với điều kiện và từ khóa của câu hỏi.';
+    const hintContext = `${stem} ${selected}`.toLocaleLowerCase('vi');
+    const hint = topic === 'L12_C1' && /chất giặt rửa|xà phòng/.test(hintContext)
+      ? 'Với xà phòng và chất giặt rửa, chú ý phản ứng xà phòng hóa, tác dụng trong nước và phần ưa nước/kị nước; phân biệt định nghĩa chung với đặc điểm của từng loại.'
+      : topic === 'L12_C1' && /dầu mỡ|dầu ăn|lipid|chất béo/.test(hintContext)
+        ? 'Với chất béo, phân biệt oxi hóa trong không khí với thủy phân, xà phòng hóa và hydrogen hóa: mỗi quá trình có điều kiện và sản phẩm khác nhau.'
+        : topic === 'L12_C1' && /acid béo|fatty acid/.test(hintContext)
+          ? 'Acid béo thường có nhóm –COOH gắn với mạch hydrocarbon dài; phân biệt acid béo với acid carboxylic mạch ngắn.'
+          : topic === 'L12_C1' && /ester|este/.test(hintContext)
+            ? 'Ester có nhóm chức R–COO–R′; xác định phần acid và phần alcohol, rồi kiểm tra đúng tên gọi, công thức hoặc phản ứng mà đề hỏi.'
+            : explanationHints[topic] || 'Đối chiếu từng lựa chọn với điều kiện và từ khóa của câu hỏi.';
     const prompt = stem ? `Đề yêu cầu: “${stem}”. ` : '';
     const choice = selected ? `Lựa chọn ${picked} nêu “${selected}”, ` : `Lựa chọn ${picked} `;
     return `${prompt}${choice}nhưng không thỏa yêu cầu đó. ${hint}`;
