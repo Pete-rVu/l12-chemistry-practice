@@ -375,7 +375,19 @@ renderTopics();
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
   }
+  const authoredRationales = {
+    L12_C2_0005: {
+      wrong: {
+        B: "B đúng: carbohydrate được chia thành ba nhóm chính là monosaccharide, disaccharide và polysaccharide. Đề hỏi phát biểu không đúng, nên một phát biểu đúng không thể là đáp án.",
+        C: "C đúng: monosaccharide là đơn vị carbohydrate đơn giản nhất, không thể thủy phân thành carbohydrate nhỏ hơn. Vì vậy đây không phải phát biểu sai mà đề yêu cầu tìm.",
+        D: "D đúng: thủy phân một phân tử disaccharide tạo ra hai phân tử monosaccharide. Ví dụ, saccharose + nước tạo glucose và fructose. Vì đề hỏi phát biểu sai nên D không phải đáp án.",
+      },
+      correct: "A sai khi nêu Cₙ(H₂O)ₙ như công thức chung. Công thức này phù hợp với một số carbohydrate như glucose, nhưng saccharose là C₁₂H₂₂O₁₁ và mắt xích tinh bột là C₆H₁₀O₅; không phải carbohydrate nào cũng có tỉ lệ C:H:O là 1:2:1. Dạng Cₙ(H₂O)ₘ chỉ là cách biểu diễn gần đúng, không phải quy tắc đúng cho mọi carbohydrate."
+    }
+  };
   function explainWrongChoice(q, picked) {
+    const authored = authoredRationales[q.id] && authoredRationales[q.id].wrong && authoredRationales[q.id].wrong[picked];
+    if (authored) return authored;
     const keyed = q.whyWrong && q.whyWrong[picked] || q.rationales && q.rationales[picked] || q.explanations && q.explanations[picked] || q.explanation || q.why;
     if (typeof keyed === 'string' && keyed.trim()) return keyed.trim();
     const stem = plainTextFromHtml(q.stem);
@@ -442,6 +454,46 @@ renderTopics();
     const choice = selected ? `Lựa chọn ${picked} nêu “${selected}”, ` : `Lựa chọn ${picked} `;
     return `${prompt}${choice}nhưng không thỏa yêu cầu đó. ${hint}`;
   }
+  function explainCorrectChoice(q) {
+    const authored = authoredRationales[q.id] && authoredRationales[q.id].correct;
+    if (authored) return authored;
+    const keyed = q.whyRight && q.whyRight[q.answer] || q.whyCorrect && q.whyCorrect[q.answer] || q.correctExplanation || q.rationales && q.rationales[q.answer] || q.explanations && q.explanations[q.answer] || q.explanation || q.why;
+    if (typeof keyed === "string" && keyed.trim()) return keyed.trim();
+    const stem = plainTextFromHtml(q.stem);
+    const correct = plainTextFromHtml(q.options[q.answer] || "");
+    const normalized = correct.toUpperCase().replace(/[₀-₉]/g, digit => String("₀₁₂₃₄₅₆₇₈₉".indexOf(digit))).replace(/[−–]/g, "-");
+    const lowerStem = stem.toLocaleLowerCase("vi");
+    const lowerCorrect = correct.toLocaleLowerCase("vi");
+    const topic = currentTopic || String(q.id || "").match(/^L12_C[1-8]/)?.[0] || "";
+    if (topic === "L12_C1" && /dầu mỡ|dầu ăn/.test(lowerStem) && /chiên|rán|mùi|ôi/.test(lowerStem)) return "Khi dầu mỡ bị đun nóng nhiều lần trong không khí, oxygen oxi hóa các liên kết đôi của acid béo không no, tạo các hợp chất dễ bay hơi như aldehyde và ketone gây mùi ôi. Đây là nguyên nhân phù hợp với hiện tượng được hỏi.";
+    if (topic === "L12_C1" && /chất giặt rửa/.test(lowerStem) && /làm sạch/.test(lowerCorrect) && /không phản ứng|không gây ra phản ứng/.test(lowerCorrect)) return "Định nghĩa nêu đúng hai điểm cốt lõi: chất giặt rửa giúp làm sạch khi dùng với nước và không phản ứng hóa học với vật liệu của bề mặt được làm sạch.";
+    if (topic === "L12_C1" && /xà phòng hóa|xà phòng hoá|saponification/.test(lowerStem) && /NaOH|KOH/.test(normalized)) return "NaOH hoặc KOH cung cấp OH⁻ để thủy phân các liên kết ester của triglyceride. Phản ứng tạo glycerol và muối của acid béo; các muối sodium hoặc potassium đó là xà phòng.";
+    if (topic === "L12_C1" && /thủy phân chất béo|thuỷ phân chất béo/.test(lowerStem) && /acid|axit/.test(lowerStem)) return "Thủy phân triglyceride trong môi trường acid tạo glycerol và các acid béo. Khác với xà phòng hóa trong môi trường kiềm, sản phẩm acid béo ở đây không bị chuyển thành muối xà phòng.";
+    if (topic === "L12_C1" && /thu được glycerol/.test(lowerStem) && /tristearin|triglyceride|chất béo/.test(lowerCorrect)) return "Tristearin là triester tạo bởi glycerol và ba gốc stearate. Khi thủy phân hoàn toàn, phần khung glycerol được giải phóng, nên chất béo này tạo glycerol.";
+    if (topic === "L12_C1" && /methyl acrylate/.test(lowerStem) && /CH2=CHCOOCH3/.test(normalized)) return "CH₂=CHCOOCH₃ giữ nối đôi C=C của gốc acrylate và nhóm ester –COOCH₃. CH₃COOCH₃ là methyl acetate, không phải methyl acrylate.";
+    if (topic === "L12_C1" && /không thuộc loại acid béo|không phải.*acid béo/.test(lowerStem) && /acetic acid|ethanoic acid|ch3cooh/.test(lowerCorrect)) return "Acetic acid (CH₃COOH) chỉ có mạch carbon ngắn, không phải acid béo với mạch hydrocarbon dài. Vì câu hỏi yêu cầu chất không thuộc loại acid béo, lựa chọn này thỏa điều kiện.";
+    if (topic === "L12_C1" && /sản xuất xà phòng|điều chế.*xà phòng/.test(lowerStem) && /NaOH|KOH/.test(normalized)) return "NaOH hoặc KOH là kiềm cần thiết để xà phòng hóa triglyceride; ion OH⁻ thủy phân liên kết ester, tạo glycerol và muối của acid béo.";
+    if (topic === "L12_C2" && /công thức chung/.test(lowerStem) && /C[Nnₙ].*H/.test(normalized)) return "Carbohydrate thường được biểu diễn gần đúng bằng Cₙ(H₂O)ₘ; chỉ một số loại có m = n. Dạng tổng quát này không khẳng định rằng mọi carbohydrate đều có tỉ lệ C:H:O là 1:2:1.";
+    if (topic === "L12_C2" && /không phải.*carbohydrate/.test(lowerStem) && /triolein/.test(lowerCorrect)) return "Triolein là triglyceride: một phân tử glycerol ester hóa với ba phân tử oleic acid. Chất béo này không phải đường đơn, đường đôi hay polysaccharide, nên không thuộc nhóm carbohydrate.";
+    if (topic === "L12_C3" && /amine|amin\b/i.test(stem) && /NH2/.test(normalized) && !/COOH|CONH/.test(normalized)) return correct + " có nhóm amine với nitrogen liên kết với gốc hydrocarbon; lựa chọn không có nhóm carboxyl –COOH hay liên kết amide –CONH–.";
+    if (topic === "L12_C3" && /amino acid|amino axit/.test(lowerStem) && /NH2/.test(normalized) && /COOH/.test(normalized)) return correct + " đồng thời có nhóm amino –NH₂ và nhóm carboxyl –COOH, hai nhóm chức đặc trưng của amino acid.";
+    if (topic === "L12_C3" && /nitrogen|nitơ/.test(lowerStem) && /methylamine|amine|amin/.test(lowerCorrect)) return "Methylamine có nguyên tử nitrogen trong nhóm –NH₂; các lựa chọn carbohydrate, alcohol hoặc carboxylic acid nêu trong câu không chứa nitrogen.";
+    if (topic === "L12_C4" && /chỉ chứa hai nguyên tố|chỉ gồm hai nguyên tố/.test(lowerStem) && /polyethylene|polietilen/.test(lowerCorrect)) return "Polyethylene có mắt xích lặp lại –CH₂–CH₂–, nên polymer chỉ chứa carbon và hydrogen. PVC còn chứa chlorine, polyacrylonitrile chứa nitrogen, còn poly(vinyl acetate) chứa oxygen.";
+    if (topic === "L12_C4" && /monomer|monome/.test(lowerStem) && /C=C|CH2=CH|CH=CH/.test(normalized)) return correct + " có nối đôi C=C có thể mở ra trong phản ứng trùng hợp cộng để tạo mắt xích polymer.";
+    if (topic === "L12_C5" && /oxi hóa|oxidation/.test(lowerStem) && /nhường electron|mất electron|tăng số oxi hóa/.test(lowerCorrect)) return "Oxi hóa là quá trình nhường electron và làm số oxi hóa tăng; phát biểu này nêu đúng định nghĩa của quá trình.";
+    if (topic === "L12_C5" && /khử|reduction/.test(lowerStem) && /nhận electron|thu electron|giảm số oxi hóa/.test(lowerCorrect)) return "Khử là quá trình nhận electron và làm số oxi hóa giảm; phát biểu này nêu đúng định nghĩa của quá trình.";
+    if (topic === "L12_C5" && /anode|anot/.test(lowerStem) && /oxi hóa|oxidation/.test(lowerCorrect)) return "Ở anode (anot) xảy ra oxi hóa: tiểu phân tại điện cực nhường electron. Quy tắc này đúng cho cả pin điện hóa lẫn bình điện phân.";
+    if (topic === "L12_C5" && /cathode|catot/.test(lowerStem) && /khử|reduction/.test(lowerCorrect)) return "Ở cathode (catot) xảy ra khử: tiểu phân tại điện cực nhận electron. Quy tắc này đúng cho cả pin điện hóa lẫn bình điện phân.";
+    if (topic === "L12_C8" && /số phối trí|coordination number/.test(lowerStem)) return "Số phối trí là số nguyên tử cho liên kết trực tiếp với ion trung tâm. Với phối tử càng cua, cần đếm từng nguyên tử cho liên kết chứ không chỉ đếm số phân tử phối tử.";
+    if (topic === "L12_C8" && /số oxi hóa|oxidation state/.test(lowerStem) && /phức|complex/.test(lowerStem)) return "Tính điện tích của toàn phức bằng cách cộng số oxi hóa của ion trung tâm với điện tích của từng phối tử; kết quả phải bằng điện tích ghi trên phức.";
+    return "";
+  }
+  function renderCorrectChoiceExplanation(q, includeAnswer = true) {
+    const reason = explainCorrectChoice(q);
+    if (!reason) return "";
+    const answerDetails = includeAnswer ? "<p><strong>Đáp án đúng:</strong> " + q.answer + ". " + q.options[q.answer] + "</p>" : "";
+    return "<div class=\"feedback-explanation\" role=\"note\"><strong>Vì sao đáp án đúng?</strong>" + answerDetails + "<p>" + escapeHtml(reason) + "</p></div>";
+  }
   function renderWrongChoiceExplanation(q, picked, includeChoices = true) {
     if (picked === undefined || picked === q.answer) return '';
     const reason = explainWrongChoice(q, picked);
@@ -451,7 +503,9 @@ renderTopics();
     const answerDetails = includeChoices
       ? `<p><strong>Đáp án đúng:</strong> ${q.answer}. ${q.options[q.answer]}</p>`
       : '';
-    return `<div class="feedback-explanation" role="note"><strong>Vì sao lựa chọn ${picked} chưa đúng?</strong>${choiceDetails}<p>${escapeHtml(reason)}</p>${answerDetails}</div>`;
+    const correctReason = explainCorrectChoice(q);
+    const correctDetails = correctReason ? "<p><strong>Vì sao đáp án " + q.answer + " đúng?</strong> " + escapeHtml(correctReason) + "</p>" : "";
+    return `<div class="feedback-explanation" role="note"><strong>Vì sao lựa chọn ${picked} chưa đúng?</strong>${choiceDetails}<p>${escapeHtml(reason)}</p>${answerDetails}${correctDetails}</div>`;
   }
   function renderQuestion() {
     const q = currentQuestions[currentIndex];
@@ -472,7 +526,7 @@ renderTopics();
       const isCorrect = picked === q.answer;
       feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
       feedback.innerHTML = isCorrect
-        ? `Chính xác! Đáp án ${q.answer}: ${q.options[q.answer]}.`
+        ? `Chính xác! Đáp án ${q.answer}: ${q.options[q.answer]}.${renderCorrectChoiceExplanation(q)}`
         : `Chưa đúng.${renderWrongChoiceExplanation(q, picked)}`;
     } else {
       feedback.textContent = '';
@@ -526,7 +580,7 @@ renderTopics();
     const secs = elapsed % 60;
     const chapter = chapterMeta.find(ch => ch.id === currentTopic);
     const title = score >= 80 ? 'Kết quả tốt' : score >= 50 ? 'Đang tiến bộ' : 'Cần ôn tập thêm';
-    document.getElementById('result-content').innerHTML = `<div class="result-hero"><div><div class="eyebrow">${timesUp ? 'Hết giờ · ' : 'Bài làm đã nộp · '}${chapter.id}</div><h1 style="font-size:clamp(32px,4vw,45px);margin-top:12px">${title}</h1><p class="lead">Bạn trả lời đúng ${correct} trên ${currentQuestions.length} câu trong ${chapter.id} · ${chapter.name}. Đáp án được đối chiếu với khóa đáp án đi kèm bộ câu hỏi gốc.</p></div><div class="result-score" style="--score:${score * 3.6}deg"><div class="result-score-inner"><strong>${score}%</strong><span>Điểm số</span></div></div></div><div class="result-stats"><div class="stat"><strong>${correct}</strong><span>Câu trả lời đúng</span></div><div class="stat"><strong>${incorrectOrBlank}</strong><span>Sai hoặc bỏ trống</span></div><div class="stat"><strong>${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</strong><span>Thời gian làm bài</span></div></div><div class="result-actions"><button class="btn btn-primary" id="retry-btn">Làm lại chương này ↻</button><button class="btn btn-secondary" id="home-btn">Chọn chương khác</button></div><div class="section-head"><div><div class="eyebrow">ĐỐI CHIẾU KHÓA ĐÁP ÁN</div><h2>Đáp án từng câu</h2></div><p>${correct}/${currentQuestions.length} đúng · ${answered} đã trả lời</p></div><div class="review-list">${currentQuestions.map((q, i) => { const picked = answers[q.id]; const ok = picked === q.answer; return `<article class="review-item"><div class="review-head"><span>Câu ${i + 1} · ${q.id}</span><span style="color:${ok ? '#389565' : '#c36a51'}">${picked === undefined ? 'Bỏ trống' : ok ? 'Đúng' : 'Chưa đúng'}</span></div><h3>${q.stem}</h3><div class="review-answer ${ok ? 'good' : 'bad'}">${picked === undefined ? 'Bạn chưa chọn đáp án.' : `Bạn chọn: ${picked}. ${q.options[picked]}`}<br>Đáp án chuẩn: ${q.answer}. ${q.options[q.answer]}</div>${picked !== undefined && !ok ? renderWrongChoiceExplanation(q, picked, false) : ''}</article>`; }).join('')}</div>`;
+    document.getElementById('result-content').innerHTML = `<div class="result-hero"><div><div class="eyebrow">${timesUp ? 'Hết giờ · ' : 'Bài làm đã nộp · '}${chapter.id}</div><h1 style="font-size:clamp(32px,4vw,45px);margin-top:12px">${title}</h1><p class="lead">Bạn trả lời đúng ${correct} trên ${currentQuestions.length} câu trong ${chapter.id} · ${chapter.name}. Đáp án được đối chiếu với khóa đáp án đi kèm bộ câu hỏi gốc.</p></div><div class="result-score" style="--score:${score * 3.6}deg"><div class="result-score-inner"><strong>${score}%</strong><span>Điểm số</span></div></div></div><div class="result-stats"><div class="stat"><strong>${correct}</strong><span>Câu trả lời đúng</span></div><div class="stat"><strong>${incorrectOrBlank}</strong><span>Sai hoặc bỏ trống</span></div><div class="stat"><strong>${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</strong><span>Thời gian làm bài</span></div></div><div class="result-actions"><button class="btn btn-primary" id="retry-btn">Làm lại chương này ↻</button><button class="btn btn-secondary" id="home-btn">Chọn chương khác</button></div><div class="section-head"><div><div class="eyebrow">ĐỐI CHIẾU KHÓA ĐÁP ÁN</div><h2>Đáp án từng câu</h2></div><p>${correct}/${currentQuestions.length} đúng · ${answered} đã trả lời</p></div><div class="review-list">${currentQuestions.map((q, i) => { const picked = answers[q.id]; const ok = picked === q.answer; return `<article class="review-item"><div class="review-head"><span>Câu ${i + 1} · ${q.id}</span><span style="color:${ok ? '#389565' : '#c36a51'}">${picked === undefined ? 'Bỏ trống' : ok ? 'Đúng' : 'Chưa đúng'}</span></div><h3>${q.stem}</h3><div class="review-answer ${ok ? 'good' : 'bad'}">${picked === undefined ? 'Bạn chưa chọn đáp án.' : `Bạn chọn: ${picked}. ${q.options[picked]}`}<br>Đáp án chuẩn: ${q.answer}. ${q.options[q.answer]}</div>${picked !== undefined && !ok ? renderWrongChoiceExplanation(q, picked, false) : renderCorrectChoiceExplanation(q, false)}</article>`; }).join('')}</div>`;
     document.getElementById('retry-btn').addEventListener('click', () => startQuiz(currentTopic));
     document.getElementById('home-btn').addEventListener('click', () => {
       document.getElementById('result-view').classList.add('hidden');
