@@ -356,6 +356,62 @@ renderTopics();
     timerHandle = setInterval(tick, 1000);
     window.scrollTo({top:0, behavior:'smooth'});
   }
+  const explanationHints = {
+    L12_C1: 'Kiểm tra nhóm chức: ester có dạng R–COO–R′; đừng nhầm với aldehyde –CHO hoặc carboxylic acid –COOH.',
+    L12_C2: 'Xác định loại carbohydrate và tính chất đang được hỏi; phân biệt đường đơn, đường đôi, đường đa và phản ứng đặc trưng của chúng.',
+    L12_C3: 'Phân biệt amine với amino acid và amide: amino acid có cả –NH₂ và –COOH; amide có liên kết –CO–NH–.',
+    L12_C4: 'Đối chiếu monomer, mắt xích lặp lại và cách tạo polymer; phân biệt trùng hợp với trùng ngưng.',
+    L12_C5: 'Theo dõi electron: oxi hóa là nhường electron, khử là nhận electron; xác định điện cực và chiều phản ứng trước khi chọn.',
+    L12_C6: 'Dựa vào tính khử và mức độ hoạt động của kim loại, dãy điện hóa, hiện tượng thụ động hóa hoặc dữ kiện phản ứng nêu trong câu.',
+    L12_C7: 'So sánh cấu hình electron và tính chất đặc trưng của kim loại nhóm IA, IIA; chú ý xu hướng phản ứng và độ tan của hợp chất.',
+    L12_C8: 'Kiểm tra phân lớp d, số oxi hóa, phối tử và số phối trí; các nguyên tố chuyển tiếp thường có nhiều số oxi hóa và tạo phức.'
+  };
+  function plainTextFromHtml(value) {
+    const holder = document.createElement('div');
+    holder.innerHTML = String(value || '');
+    holder.querySelectorAll('img').forEach(image => image.replaceWith(document.createTextNode(image.alt || '')));
+    return (holder.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+  }
+  function explainWrongChoice(q, picked) {
+    const keyed = q.whyWrong && q.whyWrong[picked] || q.rationales && q.rationales[picked] || q.explanations && q.explanations[picked] || q.explanation || q.why;
+    if (typeof keyed === 'string' && keyed.trim()) return keyed.trim();
+    const stem = plainTextFromHtml(q.stem);
+    const selected = plainTextFromHtml(q.options[picked] || '');
+    const normalized = selected.toUpperCase().replace(/[₀-₉]/g, digit => String('₀₁₂₃₄₅₆₇₈₉'.indexOf(digit))).replace(/[−–]/g, '-');
+    const asksForEster = /\bester\b|este/i.test(stem);
+    const asksNot = /không|chưa|not\b/i.test(stem);
+    if (currentTopic === 'L12_C1' && asksForEster && asksNot && /COO/.test(normalized) && !/COOH/.test(normalized)) {
+      return `Phương án ${picked} có liên kết –COO– của ester, trong khi câu hỏi yêu cầu chất không phải ester. Vì vậy lựa chọn này không thỏa từ khóa “không phải”.`;
+    }
+    if (currentTopic === 'L12_C1' && asksForEster && !asksNot && /CHO/.test(normalized) && !/COOH/.test(normalized)) {
+      return `Phương án ${picked} có nhóm –CHO đặc trưng của aldehyde. Ester cần nhóm –COO– nối với gốc hữu cơ, nên lựa chọn này không phải ester.`;
+    }
+    if (currentTopic === 'L12_C1' && asksForEster && !asksNot && /COOH/.test(normalized)) {
+      return `Phương án ${picked} có nhóm –COOH của carboxylic acid. Ester có nhóm –COO– nối với gốc hữu cơ và không còn H trong nhóm –OH của acid.`;
+    }
+    if (currentTopic === 'L12_C3' && /amine|amin\b/i.test(stem) && /COOH/.test(normalized)) {
+      return `Phương án ${picked} có nhóm –COOH của carboxylic acid (hoặc amino acid), nên không phải amine đơn chức như yêu cầu. Hãy phân biệt amine với amino acid và amide.`;
+    }
+    const topic = currentTopic || String(q.id || '').match(/^L12_C[1-8]/)?.[0] || '';
+    const hint = explanationHints[topic] || 'Đối chiếu từng lựa chọn với điều kiện và từ khóa của câu hỏi.';
+    const prompt = stem ? `Đề yêu cầu: “${stem}”. ` : '';
+    const choice = selected ? `Lựa chọn ${picked} nêu “${selected}”, ` : `Lựa chọn ${picked} `;
+    return `${prompt}${choice}nhưng không thỏa yêu cầu đó. ${hint}`;
+  }
+  function renderWrongChoiceExplanation(q, picked, includeChoices = true) {
+    if (picked === undefined || picked === q.answer) return '';
+    const reason = explainWrongChoice(q, picked);
+    const choiceDetails = includeChoices
+      ? `<p><strong>Bạn đã chọn:</strong> ${picked}. ${q.options[picked]}</p>`
+      : '';
+    const answerDetails = includeChoices
+      ? `<p><strong>Đáp án đúng:</strong> ${q.answer}. ${q.options[q.answer]}</p>`
+      : '';
+    return `<div class="feedback-explanation" role="note"><strong>Vì sao lựa chọn ${picked} chưa đúng?</strong>${choiceDetails}<p>${escapeHtml(reason)}</p>${answerDetails}</div>`;
+  }
   function renderQuestion() {
     const q = currentQuestions[currentIndex];
     const picked = answers[q.id];
@@ -376,7 +432,7 @@ renderTopics();
       feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
       feedback.innerHTML = isCorrect
         ? `Chính xác! Đáp án ${q.answer}: ${q.options[q.answer]}.`
-        : `Chưa đúng. Đáp án đúng là ${q.answer}: ${q.options[q.answer]}.`;
+        : `Chưa đúng.${renderWrongChoiceExplanation(q, picked)}`;
     } else {
       feedback.textContent = '';
     }
@@ -429,7 +485,7 @@ renderTopics();
     const secs = elapsed % 60;
     const chapter = chapterMeta.find(ch => ch.id === currentTopic);
     const title = score >= 80 ? 'Kết quả tốt' : score >= 50 ? 'Đang tiến bộ' : 'Cần ôn tập thêm';
-    document.getElementById('result-content').innerHTML = `<div class="result-hero"><div><div class="eyebrow">${timesUp ? 'Hết giờ · ' : 'Bài làm đã nộp · '}${chapter.id}</div><h1 style="font-size:clamp(32px,4vw,45px);margin-top:12px">${title}</h1><p class="lead">Bạn trả lời đúng ${correct} trên ${currentQuestions.length} câu trong ${chapter.id} · ${chapter.name}. Đáp án được đối chiếu với khóa đáp án đi kèm bộ câu hỏi gốc.</p></div><div class="result-score" style="--score:${score * 3.6}deg"><div class="result-score-inner"><strong>${score}%</strong><span>Điểm số</span></div></div></div><div class="result-stats"><div class="stat"><strong>${correct}</strong><span>Câu trả lời đúng</span></div><div class="stat"><strong>${incorrectOrBlank}</strong><span>Sai hoặc bỏ trống</span></div><div class="stat"><strong>${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</strong><span>Thời gian làm bài</span></div></div><div class="result-actions"><button class="btn btn-primary" id="retry-btn">Làm lại chương này ↻</button><button class="btn btn-secondary" id="home-btn">Chọn chương khác</button></div><div class="section-head"><div><div class="eyebrow">ĐỐI CHIẾU KHÓA ĐÁP ÁN</div><h2>Đáp án từng câu</h2></div><p>${correct}/${currentQuestions.length} đúng · ${answered} đã trả lời</p></div><div class="review-list">${currentQuestions.map((q, i) => { const picked = answers[q.id]; const ok = picked === q.answer; return `<article class="review-item"><div class="review-head"><span>Câu ${i + 1} · ${q.id}</span><span style="color:${ok ? '#389565' : '#c36a51'}">${picked === undefined ? 'Bỏ trống' : ok ? 'Đúng' : 'Chưa đúng'}</span></div><h3>${q.stem}</h3><div class="review-answer ${ok ? 'good' : 'bad'}">${picked === undefined ? 'Bạn chưa chọn đáp án.' : `Bạn chọn: ${picked}. ${q.options[picked]}`}<br>Đáp án chuẩn: ${q.answer}. ${q.options[q.answer]}</div></article>`; }).join('')}</div>`;
+    document.getElementById('result-content').innerHTML = `<div class="result-hero"><div><div class="eyebrow">${timesUp ? 'Hết giờ · ' : 'Bài làm đã nộp · '}${chapter.id}</div><h1 style="font-size:clamp(32px,4vw,45px);margin-top:12px">${title}</h1><p class="lead">Bạn trả lời đúng ${correct} trên ${currentQuestions.length} câu trong ${chapter.id} · ${chapter.name}. Đáp án được đối chiếu với khóa đáp án đi kèm bộ câu hỏi gốc.</p></div><div class="result-score" style="--score:${score * 3.6}deg"><div class="result-score-inner"><strong>${score}%</strong><span>Điểm số</span></div></div></div><div class="result-stats"><div class="stat"><strong>${correct}</strong><span>Câu trả lời đúng</span></div><div class="stat"><strong>${incorrectOrBlank}</strong><span>Sai hoặc bỏ trống</span></div><div class="stat"><strong>${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}</strong><span>Thời gian làm bài</span></div></div><div class="result-actions"><button class="btn btn-primary" id="retry-btn">Làm lại chương này ↻</button><button class="btn btn-secondary" id="home-btn">Chọn chương khác</button></div><div class="section-head"><div><div class="eyebrow">ĐỐI CHIẾU KHÓA ĐÁP ÁN</div><h2>Đáp án từng câu</h2></div><p>${correct}/${currentQuestions.length} đúng · ${answered} đã trả lời</p></div><div class="review-list">${currentQuestions.map((q, i) => { const picked = answers[q.id]; const ok = picked === q.answer; return `<article class="review-item"><div class="review-head"><span>Câu ${i + 1} · ${q.id}</span><span style="color:${ok ? '#389565' : '#c36a51'}">${picked === undefined ? 'Bỏ trống' : ok ? 'Đúng' : 'Chưa đúng'}</span></div><h3>${q.stem}</h3><div class="review-answer ${ok ? 'good' : 'bad'}">${picked === undefined ? 'Bạn chưa chọn đáp án.' : `Bạn chọn: ${picked}. ${q.options[picked]}`}<br>Đáp án chuẩn: ${q.answer}. ${q.options[q.answer]}</div>${picked !== undefined && !ok ? renderWrongChoiceExplanation(q, picked, false) : ''}</article>`; }).join('')}</div>`;
     document.getElementById('retry-btn').addEventListener('click', () => startQuiz(currentTopic));
     document.getElementById('home-btn').addEventListener('click', () => {
       document.getElementById('result-view').classList.add('hidden');
@@ -451,6 +507,7 @@ renderTopics();
   }
   const imageStyle = document.createElement('style');
   imageStyle.textContent = '.question-title img, .option-label img, .review-item img { max-width:100%; height:auto; vertical-align:middle; } .option-label { overflow-wrap:anywhere; } .setting-control { display:flex; align-items:center; gap:9px; } .setting-control select { padding:8px 10px; border-radius:8px; } .answer-feedback { margin:12px 0 0; font-size:14px; line-height:1.55; } .answer-feedback.correct, .answer-feedback.incorrect { padding:12px 14px; border-radius:10px; } .answer-feedback.correct { color:light-dark(#176b3b,#a9e3bc); background:light-dark(#edf8f0,#203f30); border:1px solid light-dark(#b7dec3,#386b4a); } .answer-feedback.incorrect { color:light-dark(#9c342b,#ffc1b7); background:light-dark(#fff0ed,#482b2a); border:1px solid light-dark(#e7b2ab,#85504a); } .option.correct { border-color:#399b61; background:light-dark(#edf8f0,#203f30); } .option.incorrect { border-color:#c66b59; background:light-dark(#fff0ed,#482b2a); } .option:disabled { cursor:default; opacity:1; }';
+  imageStyle.textContent += ' .feedback-explanation { margin-top:10px; padding:12px; border-radius:10px; text-align:left; font-weight:400; color:light-dark(#51221d,#ffe0db); background:light-dark(#fff7f5,#342321); border:1px solid light-dark(#e3aaa1,#79504a); } .feedback-explanation strong { font-weight:700; } .feedback-explanation p { margin:7px 0 0; } .review-explanation { margin-top:10px; } .answer-feedback.incorrect .feedback-explanation { color:light-dark(#51221d,#ffe0db); }';
   document.head.appendChild(imageStyle);
   initializeChapterBank().catch(error => {
     console.error('Không tải được bộ câu hỏi L12_C1–L12_C8', error);
