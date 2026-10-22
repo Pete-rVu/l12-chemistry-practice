@@ -2,10 +2,10 @@
 
 A browser-based multiple-choice practice site for chemistry chapters L12_C1 through L12_C8.
 
-## Open the practice site
+## Open the recommended version
 
-- [Start here: index.html](index.html) — the main version.
-- [Question-corrected version: index1.html](index1.html) — includes seven corrected question entries.
+- [Open the live practice site](https://pete-rvu.github.io/l12-chemistry-practice/) — the homepage redirects to the corrected version.
+- [Open index1.html directly](https://pete-rvu.github.io/l12-chemistry-practice/index1.html) — includes seven corrected question entries.
 
 Choose a chapter card to practice one chapter at a time. Before starting, choose the number of questions and when to check answers: after each question or after submitting the set.
 
@@ -17,12 +17,8 @@ Choose a chapter card to practice one chapter at a time. Before starting, choose
 - The clock starts at `00:00` and counts upward. There is no time limit.
 - The question bank is embedded in each HTML file; no build step or extra data file is required.
 
-## Hosting on GitHub Pages
+## GitHub Pages
 
-After the files are uploaded to a GitHub repository, open **Settings → Pages** and set the publishing source to the `main` branch and `/(root)` folder. The public site address will be:
-
-`https://YOUR-GITHUB-USERNAME.github.io/l12-chemistry-practice/`
-
-Replace `YOUR-GITHUB-USERNAME` with the account that owns the repository. The alternate version is available at the same address followed by `index1.html`.
+The site is published from the `main` branch and `/(root)` folder. The public project repository is [Pete-rVu/l12-chemistry-practice](https://github.com/Pete-rVu/l12-chemistry-practice).
 
 Practice results are calculated in the browser and are not sent to a server.
