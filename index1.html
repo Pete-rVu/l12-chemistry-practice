@@ -383,6 +383,13 @@ renderTopics();
     const normalized = selected.toUpperCase().replace(/[₀-₉]/g, digit => String('₀₁₂₃₄₅₆₇₈₉'.indexOf(digit))).replace(/[−–]/g, '-');
     const asksForEster = /\bester\b|este/i.test(stem);
     const asksNot = /không|chưa|not\b/i.test(stem);
+    const lowerStem = stem.toLocaleLowerCase('vi');
+    const lowerSelected = selected.toLocaleLowerCase('vi');
+    if (currentTopic === 'L12_C1' && /dầu mỡ|dầu ăn/.test(lowerStem) && /chiên|rán|mùi|ôi/.test(lowerStem)) {
+      if (/thu[ỷy] phân/.test(lowerSelected)) return 'Thủy phân cắt liên kết ester nhờ nước; đó không phải nguyên nhân chính gây mùi ôi khi dầu mỡ bị chiên rán nhiều lần. Ở nhiệt độ cao, oxygen oxi hóa các gốc acid béo không no và tạo hợp chất dễ bay hơi có mùi khó chịu.';
+      if (/xà phòng hóa|xà phòng hoá/.test(lowerSelected)) return 'Xà phòng hóa là phản ứng chất béo với kiềm tạo glycerol và muối của acid béo. Câu hỏi hỏi nguyên nhân gây mùi ôi khi chiên rán nhiều lần; đó chủ yếu là sự oxi hóa dầu mỡ bởi oxygen.';
+      if (/hydrogen hóa|hydrogen hoá|hiđro hóa|hiđro hoá/.test(lowerSelected)) return 'Hydrogen hóa cộng H₂ vào liên kết đôi C=C, làm giảm độ không no của dầu. Nó không giải thích mùi ôi do dầu mỡ bị oxi hóa khi chiên rán nhiều lần.';
+    }
     if (currentTopic === 'L12_C1' && asksForEster && asksNot && /COO/.test(normalized) && !/COOH/.test(normalized)) {
       return `Phương án ${picked} có liên kết –COO– của ester, trong khi câu hỏi yêu cầu chất không phải ester. Vì vậy lựa chọn này không thỏa từ khóa “không phải”.`;
     }
@@ -396,7 +403,9 @@ renderTopics();
       return `Phương án ${picked} có nhóm –COOH của carboxylic acid (hoặc amino acid), nên không phải amine đơn chức như yêu cầu. Hãy phân biệt amine với amino acid và amide.`;
     }
     const topic = currentTopic || String(q.id || '').match(/^L12_C[1-8]/)?.[0] || '';
-    const hint = explanationHints[topic] || 'Đối chiếu từng lựa chọn với điều kiện và từ khóa của câu hỏi.';
+    const hint = topic === 'L12_C1' && /dầu mỡ|dầu ăn|lipid|chất béo/i.test(stem)
+      ? 'Với chất béo, phân biệt oxi hóa trong không khí với thủy phân, xà phòng hóa và hydrogen hóa: mỗi quá trình có điều kiện và sản phẩm khác nhau.'
+      : explanationHints[topic] || 'Đối chiếu từng lựa chọn với điều kiện và từ khóa của câu hỏi.';
     const prompt = stem ? `Đề yêu cầu: “${stem}”. ` : '';
     const choice = selected ? `Lựa chọn ${picked} nêu “${selected}”, ` : `Lựa chọn ${picked} `;
     return `${prompt}${choice}nhưng không thỏa yêu cầu đó. ${hint}`;
